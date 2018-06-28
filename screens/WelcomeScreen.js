@@ -1,48 +1,69 @@
-import React, { Component } from 'react';
-import { View, Text, AsyncStorage, ActivityIndicator } from 'react-native';
-import { AppLoading } from 'expo';
-import Slides from '../components/Slides';
+import React, { Component } from "react";
+import { View, Text, ActivityIndicator } from "react-native";
+
+import Slides from "../components/Slides";
+import { connect } from "react-redux";
 
 const SLIDE_DATA = [
-  { text: 'Welcome to JobApp', color: '#03A9F4' },
-  { text: 'Use this to find a job', color: '#009688' },
-  { text: 'Set your location, then swipe away', color: '#03A9F4' }
+  { text: "Welcome to Job Finder", color: "#03A9F4" },
+  { text: "Set your location, then swipe away!", color: "#009688" },
+  { text: "READY TO GO", color: "#03A9F4" }
 ];
 
 class WelcomeScreen extends Component {
-  state = { token: null };
-
-  async componentWillMount() {
-    let token = await AsyncStorage.getItem('fb_token');
-    if (token) {
-      this.props.navigation.navigate('map');
-      this.setState({ token });
-    } else {
-      this.setState({ token: false });
+  componentWillReceiveProps = nextProps => {
+    if (!nextProps.shouldShowScreen && nextProps.decisionValid && nextProps.tokenValid) {
+      this.props.navigation.navigate("map");
     }
-  }
-  onSlidesComplete() {
-    this.props.navigation.navigate('auth');
-  }
+    if (!nextProps.shouldShowScreen && nextProps.decisionValid && !nextProps.tokenValid) {
+      this.props.navigation.navigate("auth");
+    }
+  };
+
+  onSlidesComplete = () => {
+    this.props.navigation.navigate("auth");
+  };
 
   render() {
-    if (this.state.token === null) {
+    if (this.props.shouldShowScreen && this.props.decisionValid) {
       return (
-        <ActivityIndicator
-          size="large"
-          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
-        />
+        <View
+          style={{
+            flex: 1
+          }}
+        >
+          <Slides data={SLIDE_DATA} onButtonPressed={this.onSlidesComplete} />
+        </View>
       );
     }
+
     return (
-      <View style={{ flex: 1 }}>
-        <Slides
-          data={SLIDE_DATA}
-          onComplete={this.onSlidesComplete.bind(this)}
-        />
+      <View style={{ flex: 1, justifyContent: "center" }}>
+        <ActivityIndicator size="large" color="#0000ff" />
       </View>
     );
   }
 }
 
-export default WelcomeScreen;
+const mapStateToProps = state => {
+  const { auth } = state;
+  let decisionValid = false;
+  let tokenValid = false;
+  const stateLoaded = auth.progress
+    ? auth.progress === "completed" ? true : false
+    : false;
+  let shouldShowScreen = false;
+  if (stateLoaded) {
+    const currentTime = Math.floor(new Date().getTime() / 1000);
+    shouldShowScreen = auth.token ? false : true;
+    decisionValid = true;
+    tokenValid = auth.token && auth.expires && auth.expires > currentTime;
+  }
+  return {
+    shouldShowScreen,
+    decisionValid,
+    tokenValid
+  };
+};
+
+export default connect(mapStateToProps, null)(WelcomeScreen);

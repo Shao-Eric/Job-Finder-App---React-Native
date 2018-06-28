@@ -1,16 +1,28 @@
-import _ from 'lodash';
-import { REHYDRATE } from 'redux-persist/constants';
-import { LIKE_JOB, CLEAR_LIKED_JOBS } from '../actions/types';
+import _ from "lodash";
 
-export default function(state = [], action) {
+import { LIKE_JOB, CLEAR_LIKED_JOBS } from "../actions/types";
+
+const initialState = {
+  jobs: []
+};
+
+export default (state = initialState, action) => {
   switch (action.type) {
-    case REHYDRATE:
-      return action.payload.likedJobs || [];
-    case CLEAR_LIKED_JOBS:
-      return [];
     case LIKE_JOB:
-      return _.uniqBy([action.payload, ...state], 'jobkey');
+      mergedJobs = _.uniqBy([action.payload, ...state.jobs], "jobkey");
+      return {
+        ...state,
+        jobs: mergedJobs
+      };
+      break;
+    case CLEAR_LIKED_JOBS:
+      return {
+        ...state,
+        jobs: []
+      };
+
     default:
       return state;
+      break;
   }
-}
+};

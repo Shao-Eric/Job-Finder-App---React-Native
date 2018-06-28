@@ -1,25 +1,23 @@
-import { Permissions, Notifications } from 'expo';
-import { AsyncStorage } from 'react-native';
-import axios from 'axios';
+import { Permissions, Notifications } from "expo";
+import { AsyncStorage } from "react-native";
+import axios from "axios";
 
-const PUSH_ENDPOINT = 'http://rallycoding.herokuapp.com/api/tokens';
+const PUSH_ENDPOINT = "http://rallycoding.herokuapp.com/api/tokens";
 
 export default async () => {
-  let previousToken = await AsyncStorage.getItem('pushtoken');
-  console.log(previousToken);
+  const previousToken = await AsyncStorage.getItem("pushToken");
+
   if (previousToken) {
     return;
   } else {
-    let { status } = await Permissions.askAsync(
-      Permissions.REMOTE_NOTIFICATIONS
-    );
-
-    if (status !== 'granted') {
+    const { status } = await Permissions.askAsync(Permissions.REMOTE_NOTIFICATIONS);
+    if (status !== "granted") {
       return;
     }
 
-    let token = await Notifications.getExpoPushTokenAsync();
-    await axios.post(PUSH_ENDPOINT, { token: { token } });
-    AsyncStorage.setItem('pushtoken', token);
+    const pushToken = await Notifications.getExpoPushTokenAsync();
+
+    await axios.post(PUSH_ENDPOINT, { token: { pushToken } });
+    await AsyncStorage.setItem("pushToken", pushToken);
   }
 };

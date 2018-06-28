@@ -1,18 +1,13 @@
-import { createStore, compose, applyMiddleware } from 'redux';
-import thunk from 'redux-thunk';
-import { persistStore, autoRehydrate } from 'redux-persist';
-import { AsyncStorage } from 'react-native';
-import reducers from '../reducers';
+import { createStore, compose, applyMiddleware } from "redux";
+import { AsyncStorage } from "react-native";
+import thunk from "redux-thunk";
+import { persistStore, autoRehydrate } from "redux-persist";
+import { Location } from "expo";
+import reducers from "../reducers/index";
+import * as actions from "../actions/index";
 
-const store = createStore(
-  reducers,
-  {},
-  compose(
-    applyMiddleware(thunk),
-    autoRehydrate()
-  )
-);
+const store = createStore(reducers, {}, compose(applyMiddleware(thunk)));
 
-persistStore(store, { storage: AsyncStorage, whitelist: ['likedJobs'] });
-
+Location.setApiKey("AIzaSyCpcxNDWenfCYl5TYwgaTc3kx0az0DH87M");
+store.dispatch(actions.checkAuth());
 export default store;
