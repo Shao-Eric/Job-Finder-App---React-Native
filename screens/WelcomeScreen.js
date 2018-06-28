@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, AsyncStorage } from 'react-native';
+import { View, Text, AsyncStorage, ActivityIndicator } from 'react-native';
 import { AppLoading } from 'expo';
 import Slides from '../components/Slides';
 
@@ -21,18 +21,26 @@ class WelcomeScreen extends Component {
       this.setState({ token: false });
     }
   }
-  // onSlidesComplete() {
-  //   this needs to bind(this)
-  // }
-  onSlidesComplete = () => {
+  onSlidesComplete() {
     this.props.navigation.navigate('auth');
-  };
+  }
+
   render() {
     if (this.state.token === null) {
-      return <AppLoading />;
+      return (
+        <ActivityIndicator
+          size="large"
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+        />
+      );
     }
     return (
-      <Slides data={SLIDE_DATA} onComplete={this.onSlidesComplete.bind(this)} />
+      <View style={{ flex: 1 }}>
+        <Slides
+          data={SLIDE_DATA}
+          onComplete={this.onSlidesComplete.bind(this)}
+        />
+      </View>
     );
   }
 }

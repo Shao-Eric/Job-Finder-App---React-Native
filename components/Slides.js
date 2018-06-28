@@ -1,17 +1,23 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { View, Text, ScrollView, Dimensions } from 'react-native';
 import { Button } from 'react-native-elements';
 
-const SCREEN_WIDTH = Dimensions.get('window').width;
+const SCREEN_WIDTH = Dimensions.get('window').width; //dimension
+const SCREEN_HEIGHT = Dimensions.get('window').height;
 
-class Slides extends Component {
+class Slides extends React.Component {
+  componentWillMount() {
+    console.log('The width of my screen is: ' + SCREEN_WIDTH);
+    console.log('The height of my screen is: ' + SCREEN_HEIGHT);
+  }
+
   renderLastSlide(index) {
     if (index === this.props.data.length - 1) {
       return (
         <Button
-          title="Onwards"
-          raised
           buttonStyle={styles.buttonStyle}
+          title="Onwards!"
+          raised
           onPress={this.props.onComplete}
         />
       );
@@ -25,12 +31,13 @@ class Slides extends Component {
           key={slide.text}
           style={[styles.slideStyle, { backgroundColor: slide.color }]}
         >
-          <Text style={styles.textStyle}>{slide.text}</Text>
+          <Text style={styles.textStyle}>{slide.text}</Text>//textstyle
           {this.renderLastSlide(index)}
         </View>
       );
     });
   }
+
   render() {
     return (
       <ScrollView horizontal pagingEnabled style={{ flex: 1 }}>
@@ -39,6 +46,7 @@ class Slides extends Component {
     );
   }
 }
+
 const styles = {
   slideStyle: {
     flex: 1,

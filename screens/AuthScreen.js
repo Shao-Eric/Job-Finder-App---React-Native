@@ -6,13 +6,11 @@ import * as actions from '../actions';
 class AuthScreen extends Component {
   componentDidMount() {
     this.props.facebookLogin();
-    AsyncStorage.removeItem('fb_token');
-    this.onAuthComplete(this.props); //not a required line of code
+    //  this.onAuthComplete(this.props);
   }
-
+  //gets called when this component gets re-rendered
   componentWillReceiveProps(nextProps) {
     this.onAuthComplete(nextProps);
-    //is called when app is about to re-render
   }
 
   onAuthComplete(props) {
@@ -20,15 +18,14 @@ class AuthScreen extends Component {
       this.props.navigation.navigate('map');
     }
   }
-
   render() {
     return <View />;
   }
 }
 
-function mapStateToProps({ auth }) {
+const mapStateToProps = ({ auth }) => {
   return { token: auth.token };
-}
+};
 
 export default connect(
   mapStateToProps,
